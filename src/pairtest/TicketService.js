@@ -1,4 +1,3 @@
-import TicketTypeRequest from "./lib/TicketTypeRequest.js";
 import InvalidPurchaseException from "./lib/InvalidPurchaseException.js";
 import TicketPaymentService from "../thirdparty/paymentgateway/TicketPaymentService.js";
 import SeatReservationService from "../thirdparty/seatbooking/SeatReservationService.js"
@@ -21,14 +20,10 @@ export default class TicketService {
       throw new InvalidPurchaseException("Invalid account ID");
     }
 
-    const {totalTickets, totalAmount, totalSeats } = this.#processTicketRequests(ticketTypeRequests);
+    const {totalAmount, totalSeats } = this.#processTicketRequests(ticketTypeRequests);
   
-    // For reciept generation - future
-    return {
-      totalTickets,
-      totalAmount,
-      totalSeats,
-    }
+    this.#processPayment(accountId, totalAmount);
+    this.#reserveSeats(accountId, totalSeats);
   }
 
   #processTicketRequests(ticketTypeRequests) {
@@ -55,10 +50,21 @@ export default class TicketService {
     }
 
     return {
-      totalTickets,
       totalAmount,
       totalSeats,
     }
+  }
+
+   // Private method to process payment
+   #processPayment(accountId, totalAmount) {
+    const paymentService = new TicketPaymentService();
+    paymentService.makePayment(accountId, totalAmount);
+  }
+
+  // Private method to reserve seats
+  #reserveSeats(accountId, totalSeats) {
+    const reservationService = new SeatReservationService();
+    reservationService.reserveSeat(accountId, totalSeats);
   }
 
 

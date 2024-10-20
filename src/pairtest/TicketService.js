@@ -1,6 +1,6 @@
 import InvalidPurchaseException from "./lib/InvalidPurchaseException.js";
 import TicketPaymentService from "../thirdparty/paymentgateway/TicketPaymentService.js";
-import SeatReservationService from "../thirdparty/seatbooking/SeatReservationService.js"
+import SeatReservationService from "../thirdparty/seatbooking/SeatReservationService.js";
 
 export default class TicketService {
   /**
@@ -20,10 +20,26 @@ export default class TicketService {
       throw new InvalidPurchaseException("Invalid account ID");
     }
 
-    const {totalAmount, totalSeats } = this.#processTicketRequests(ticketTypeRequests);
-  
+    const { totalAmount, totalSeats } = this.#processTicketRequests(ticketTypeRequests);
+
     this.#processPayment(accountId, totalAmount);
     this.#reserveSeats(accountId, totalSeats);
+  }
+
+  #validateTicketCount(totalTickets) {
+    if (totalTickets > this.#maxTickets) {
+      throw new InvalidPurchaseException(
+        "Cannot purchase more than 25 tickets at a time",
+      );
+    }
+  }
+
+  #validateAdultPresence(adultTickets, childTickets, infantTickets) {
+    if ((childTickets > 0 || infantTickets > 0) && adultTickets === 0) {
+      throw new InvalidPurchaseException(
+        "Child and Infant tickets cannot be purchased without an Adult ticket",
+      );
+    }
   }
 
   #processTicketRequests(ticketTypeRequests) {
@@ -40,23 +56,29 @@ export default class TicketService {
 
       totalTickets += noOfTickets;
       totalAmount += noOfTickets * this.#ticketPrices[ticketType];
-      
+
+      // Validate ticket count
+      this.#validateTicketCount(totalTickets);
+
       if (ticketType === "INFANT") {
         infantTickets += noOfTickets; // Infants don't need seats
-      }else if ( ticketType === "ADULT" || ticketType === "CHILD") {
+      } else if (ticketType === "ADULT" || ticketType === "CHILD") {
         totalSeats += noOfTickets;
-        (ticketType === "ADULT") ? adultTickets += noOfTickets : childTickets += noOfTickets;
+        (ticketType === "ADULT") ? (adultTickets += noOfTickets) : (childTickets += noOfTickets);
       }
     }
+
+    // Validate adult presence after processing all tickets
+    this.#validateAdultPresence(adultTickets, childTickets, infantTickets);
 
     return {
       totalAmount,
       totalSeats,
-    }
+    };
   }
 
-   // Private method to process payment
-   #processPayment(accountId, totalAmount) {
+  // Private method to process payment
+  #processPayment(accountId, totalAmount) {
     const paymentService = new TicketPaymentService();
     paymentService.makePayment(accountId, totalAmount);
   }
@@ -66,6 +88,4 @@ export default class TicketService {
     const reservationService = new SeatReservationService();
     reservationService.reserveSeat(accountId, totalSeats);
   }
-
-
 }

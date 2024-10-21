@@ -49,6 +49,13 @@ describe("TicketService", () => {
     );
   });
 
+  it("should throw error with 0 ticket purchase", () => {
+    const requests = new TicketTypeRequest("ADULT", 0);
+    expect(() => {
+      ticketService.purchaseTickets(accountId, requests);
+    }).toThrow(InvalidPurchaseException);
+  });
+
   it("should throw error for more than 25 tickets purchase", () => {
     const requests = new TicketTypeRequest("ADULT", 26);
     expect(() => {

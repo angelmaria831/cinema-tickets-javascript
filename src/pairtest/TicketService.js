@@ -28,9 +28,7 @@ export default class TicketService {
 
   #validateTicketCount(totalTickets) { 
     if (totalTickets > this.#maxTickets) {
-      throw new InvalidPurchaseException(
-        "Cannot purchase more than 25 tickets at a time",
-      );
+      throw new InvalidPurchaseException("Cannot purchase more than 25 tickets at a time");
     }
 
     if(totalTickets <= 0) {
@@ -40,9 +38,7 @@ export default class TicketService {
 
   #validateAdultPresence(adultTickets, childTickets, infantTickets) {
     if ((childTickets > 0 || infantTickets > 0) && adultTickets === 0) {
-      throw new InvalidPurchaseException(
-        "Child and Infant tickets cannot be purchased without an Adult ticket",
-      );
+      throw new InvalidPurchaseException("Child and Infant tickets cannot be purchased without an Adult ticket");
     }
   }
 

@@ -1,4 +1,4 @@
-import TicketTypeRequest from "../src/pairtest/lib/TicketTypeRequest";
+import TicketTypeRequest from "../../../src/pairtest/lib/TicketTypeRequest";
 
 describe("TicketTypeRequest", () => {
   it("should create TicketTypeRequest for valid ticket types and noOfTickets", () => {

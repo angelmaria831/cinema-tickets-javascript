@@ -1,11 +1,11 @@
-import TicketService from "../src/pairtest/TicketService";
-import TicketTypeRequest from "../src/pairtest/lib/TicketTypeRequest";
-import InvalidPurchaseException from "../src/pairtest/lib/InvalidPurchaseException";
-import TicketPaymentService from "../src/thirdparty/paymentgateway/TicketPaymentService";
-import SeatReservationService from "../src/thirdparty/seatbooking/SeatReservationService";
+import TicketService from "../../src/pairtest/TicketService";
+import TicketTypeRequest from "../../src/pairtest/lib/TicketTypeRequest";
+import InvalidPurchaseException from "../../src/pairtest/lib/InvalidPurchaseException";
+import TicketPaymentService from "../../src/thirdparty/paymentgateway/TicketPaymentService";
+import SeatReservationService from "../../src/thirdparty/seatbooking/SeatReservationService";
 
-jest.mock("../src/thirdparty/paymentgateway/TicketPaymentService.js");
-jest.mock("../src/thirdparty/seatbooking/SeatReservationService.js");
+jest.mock("../../src/thirdparty/paymentgateway/TicketPaymentService.js");
+jest.mock("../../src/thirdparty/seatbooking/SeatReservationService.js");
 
 describe("TicketService", () => {
   let ticketService;

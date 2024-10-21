@@ -11,7 +11,7 @@ export default class TicketService {
   #ticketPrices = {
     ADULT: 25,
     CHILD: 15,
-    INFANT: 0,
+    INFANT: 0, // Infants do not pay for tickets
   };
 
   purchaseTickets(accountId, ...ticketTypeRequests) {
@@ -22,15 +22,19 @@ export default class TicketService {
 
     const { totalAmount, totalSeats } = this.#processTicketRequests(ticketTypeRequests);
 
-    this.#processPayment(accountId, totalAmount);
-    this.#reserveSeats(accountId, totalSeats);
+    this.#processPayment(accountId, totalAmount); // Makes a payment request 
+    this.#reserveSeats(accountId, totalSeats); // Makes a seat reservation request
   }
 
-  #validateTicketCount(totalTickets) {
+  #validateTicketCount(totalTickets) { 
     if (totalTickets > this.#maxTickets) {
       throw new InvalidPurchaseException(
         "Cannot purchase more than 25 tickets at a time",
       );
+    }
+
+    if(totalTickets <= 0) {
+      throw new InvalidPurchaseException("Atleast one ticket must be purchased");
     }
   }
 
